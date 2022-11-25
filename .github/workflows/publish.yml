@@ -1,0 +1,35 @@
+name: Build a TiddlyWiki static site and deploy to GH Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      # - source
+      # It is highly recommended that you only run this action on push to a 
+        # specific branch, eg. master or source (if on *.github.io repo)
+    
+jobs:
+  build-static-tw-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.5.1
+
+      - name: Build Static Pages 🛠
+        run: | 
+             chmod +x $GITHUB_WORKSPACE/build.sh
+             ./build.sh
+
+      - name: add a nojekyll file 🚫
+        run: touch $GITHUB_WORKSPACE/static/.nojekyll
+      
+      - name: Deploy to GH Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: static 
+          clean: true
